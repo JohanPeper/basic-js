@@ -3,53 +3,42 @@
 module.exports = function transform(arr) {
   if (arr.constructor != Array) { throw arr; }
   else {
-    // console.log(arr);
-    // arr = arr.flat(); 
-    // console.log(arr);
-    let array = [];
+
+    let array = [], array1 = [];
     let del = [];
-
     array = arr.slice();
-
     array.forEach((item, index) => {
-      if (item == '--discard-next' || item == "--discard-next") {
-        if (index < array.length - 1) {
-          if(array[index + 2] == '--discard-next'){del = array.splice(index, 4);}
-          else if (array[index + 2] == '--double-prev' || array[index + 2] == '--discard-prev') {
-             del = array.splice(index, 3);
-          }
-          else { del = array.splice(index, 2); return index-=2;  }
+      if (item == '--discard-next') {
+        return
+      }
+      else if (item == '--double-next') {        
+          array1.push(array[index + 1]);
+      }
+      else if (item == '--double-prev') {
+        if (array[index - 2] == '--discard-next') {
+          return
         }
-        else { return del  = array.splice(index, 1); };
-      }
-    })
-
-    array.forEach((item, index) => {
-      if (item == '--double-next') {
-        if (index < array.length - 1) {
-          return array[index] = array[index + 1];
+        else {
+          array1.push(array[index - 1]);
         }
-        else { return del  = array.splice(index, 1); }
       }
-    })
-
-    array.forEach((item, index) => {
-      if (item == '--double-prev') {
-        if (index > 0) {
-          return array[index] = array[index - 1];
-        } else { return del = array.splice(index, 1); }
-      }
-    })
-
-    array.forEach((item, index) => {
-      if (item == '--discard-prev' || item == "--discard-prev") {
-        if(array[index + 2] == '--discard-prev'){del = array.splice(index, 4);}
-        else if (index > 0) {
-          del = array.splice(index - 1, 2);
+      else if (item == '--discard-prev') {
+        if (array[index - 2] == '--discard-next') {
+          return
         }
-        else { return del = array.splice(index, 1); }
+        else { del = array1.pop() }
+      }
+      else {
+        if (array[index - 1] != '--discard-next') {
+          array1.push(item)
+        }
+        else { return }
       }
     })
-    return array;
+    function dellUndefined(value) {
+      return value != undefined;
+    }
+    array1 = array1.filter(dellUndefined)
+    return array1;
   }
 };
